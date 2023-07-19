@@ -47,8 +47,56 @@ function init() {
                         console.log("error from employee: ", err);
                     })
                 }
-                else if (data.option === 'Add Employee') { }
-                else if (data.option === 'Update Employee Role') { }
+                else if (data.option === 'Add Employee') {
+                    inquirer.prompt([
+                        {
+                            type: 'input',
+                            name: 'newEmployeeFirstName',
+                            message: 'What is the employees first name?'
+                        },
+                        {
+                            type: 'input',
+                            name: 'newEmployeeLastName',
+                            message: 'What is the employees last name?'
+                        },
+                        {
+                            type: 'input',
+                            name: 'newEmployeeRole',
+                            message: 'What is the employees role?',
+                        },
+                        {
+                            type: 'input',
+                            name: 'newEmployeeManager',
+                            message: 'Who is the employees manager?',
+                        }]).then(data => {
+                            db.query('INPUT INTO employee (first_name,last_name,role_id,manager_id) VALUES (?,?,?,?)', data.first_name, data.last_name, data.role_id, data.manager_id, function (err, res) {
+                                console.log('Employee Added');
+                            })
+                        })
+                }
+                else if (data.option === 'Update Employee Role') {
+                    inquirer.prompt([
+                        {
+                            type: 'input',
+                            name: 'title',
+                            message: 'Please Enter the title of the role',
+                        },
+                        {
+                            type: 'input',
+                            name: 'salary',
+                            message: 'Please Enter the Salary of the role',
+                        },
+                        {
+                            type: 'input',
+                            name: 'department_id',
+                            message: 'Please Enter the department id for that role',
+                        }
+                    ]).then(data => {
+                        db.query('INPUT INTO employee (title,salary,department_id) VALUES (?,?,?)', data.title, data.salary, data.department_id), function (err, res) {
+                            console.log('Changed employees Role');
+                        }
+                    })
+                }
                 else if (data.option === 'View All Roles') {
                     db.query('SELECT * FROM role', function (err, res) {
                         console.log(res);

@@ -11,20 +11,10 @@ const db = mysql.createConnection(
         host: 'localhost',
         user: 'root',
         password: '224Ardmore',
-        database: 'employees_db'
+        database: 'buiness_db'
     },
-    console.log(`Connected to the employees_db database.`)
+    console.log(`Connected to the buiness_db database.`)
 );
-
-
-
-
-
-
-
-
-
-
 
 
 app.listen(PORT, () => { console.log(`Working on ${PORT}`); });

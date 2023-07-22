@@ -1,6 +1,6 @@
-function init() {
+const inquirer = require('inquirer');
+async function init() {
     const express = require('express');
-    const inquirer = require('inquirer');
     const mysql = require('mysql2');
 
     const PORT = process.env.PORT || 8080;
@@ -66,10 +66,9 @@ function init() {
 
             })
     }//end of runPrompt
-    runProgram();
     function viewAllEmp() {
         db.query('SELECT * FROM employee', function (err, res) {
-            console.log(res);
+            console.table(res);
             console.log("error from employee: ", err);
         })
     }
@@ -95,9 +94,26 @@ function init() {
                 name: 'newEmployeeManager',
                 message: 'Who is the employees manager?',
             }]).then(data => {
-                db.query('INPUT INTO employee (first_name,last_name,role_id,manager_id) VALUES (?,?,?,?)', data.first_name, data.last_name, data.role_id, data.manager_id, function (err, res) {
-                    console.log('Employee Added');
-                })
+               
+                db.query('SELECT id FROM role WHERE title=?', [data.newEmployeeRole], function (err, res) {
+                    if (err) {
+                        console.error(err);
+                        return
+                    }
+                    if(res.length===0) {
+                        console.error("Cannot find such a job title")
+                    }
+                    const convertedRoleId = res[0].id;
+
+                    db.query('INSERT INTO employee (first_name,last_name,role_id,manager_id) VALUES (?,?,?,?)', [data.newEmployeeFirstName, data.newEmployeeLastName, convertedRoleId, data.newEmployeeManager], function (err, res) {
+                        if (err) {
+                            console.error(err);
+                            return;
+                        }
+                        console.log('Employee Added');
+                    })
+
+                });
             })
     }
     function updateEmpRole() {
@@ -125,16 +141,24 @@ function init() {
     }
     function viewAllRoles() {
         db.query('SELECT * FROM role', function (err, res) {
-            console.log(res);
+            console.table(res);
             console.log('error from Roles request: ', err);
         })
     }
     function viewAllDept() {
         db.query('SELECT * FROM department', function (err, res) {
-            console.log(res);
+            console.table(res);
             console.log('error from Departments Request: ', err);
         })
     }
-    app.listen(PORT, () => { console.log(`Working on ${PORT}`); });
+    app.listen(PORT, () => {
+        console.log(`Working on ${PORT}`);
+        runProgram();
+
+    });
 }//end of init func
+//init();
+
+
+
 init();

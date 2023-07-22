@@ -33,7 +33,7 @@ function init() {
     |~WELCOME TO EMPLOYEE MANAGER~|
     -------------------------------`);
 
-    function runPrompt() {
+    function runProgram() {
         inquirer.prompt([{
             type: 'list',
             name: "option",
@@ -66,7 +66,7 @@ function init() {
 
             })
     }//end of runPrompt
-    runPrompt();
+    runProgram();
     function viewAllEmp() {
         db.query('SELECT * FROM employee', function (err, res) {
             console.log(res);

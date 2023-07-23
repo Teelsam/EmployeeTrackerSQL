@@ -60,34 +60,35 @@ async function init() {
                 else if (data.option === 'View All Departments') {
                     viewAllDept();
                 }
-                else if (data.option === 'Add Department') { }
+                else if (data.option === 'Add Department') {
+
+                }
                 else {
                     return console.log('A choice must be made');
                 }
 
             })
-    }//end of runPrompt
-    function viewAllEmp() {
+    }
+    function viewAllEmp() {//shows all employees in employee table
         db.query(`
         SELECT employee.id, first_name, last_name,manager_id, title AS job_title, salary, department_id FROM employee
         INNER JOIN role
         ON role_id = role.id
         ORDER BY employee.id ASC
         `, function (err, res) {
+            console.log('\n');
             console.table(res);
             console.log("error from employee: ", err);
         })
+        runProgram();
     }
-    function addEmp() {
-
+    function addEmp() { // Does two process, i) queries roles form role table to populate role query in ii) where emp info is collected
         let roleChoices = [];
         db.query("SELECT * from role", function (err, res) {
             if (err) {
                 console.error(err);
             }
             roleChoices = res;
-
-
             inquirer.prompt([
                 {
                     type: 'input',
@@ -136,11 +137,17 @@ async function init() {
 
     }
     function updateEmpRole() {
+
         inquirer.prompt([
             {
                 type: 'input',
+                name: 'employee',
+                message: 'Please Enter Employee ID',
+            },
+            {
+                type: 'input',
                 name: 'title',
-                message: 'Please Enter the title of the role',
+                message: 'Please Enter the job_title',
             },
             {
                 type: 'input',
@@ -153,31 +160,44 @@ async function init() {
                 message: 'Please Enter the department id for that role',
             }
         ]).then(data => {
-            db.query('INPUT INTO employee (title,salary,department_id) VALUES (?,?,?)', data.title, data.salary, data.department_id), function (err, res) {
-                console.log('Changed employees Role');
+            db.query('INPUT INTO employee (employee,title,salary,department_id) VALUES (?,?,?,?)', [data.employee, data.title, data.salary, data.department_id]), function (err, res) {
+                if (err) {
+                    console.log(err);
+                }
+                else {
+                    console.log('Changed employees Role');
+                }
             }
         })
     }
     function viewAllRoles() {
-        db.query('SELECT * FROM role', function (err, res) {
+        db.query(`SELECT * FROM role`, function (err, res) {
+            console.log('\n');
             console.table(res);
-            console.log('error from Roles request: ', err);
+            if (err) {
+                console.log('error from Roles request: ', err);
+            }
         })
+        runProgram();
     }
     function viewAllDept() {
         db.query('SELECT * FROM department', function (err, res) {
+            console.log('---------------------------------------------------------------------------------------');
             console.table(res);
-            console.log('error from Departments Request: ', err);
+            console.log('---------------------------------------------------------------------------------------');
+
+            if (err) {
+                console.log('error from Departments Request: ', err);
+            }
         })
+
+        runProgram();
     }
     app.listen(PORT, () => {
         console.log(`Working on ${PORT}`);
         runProgram();
 
     });
-}//end of init func
-//init();
-
-
+}
 
 init();

@@ -55,7 +55,7 @@ async function init() {
                     viewAllRoles();
                 }
                 else if (data.option === 'Add Role') {
-
+                    addRole();
                 }
                 else if (data.option === 'View All Departments') {
                     viewAllDept();
@@ -118,7 +118,7 @@ async function init() {
                             return
                         }
                         if (res.length === 0) {
-                            console.error("Cannot find such a job title")
+                            console.error("Cannot find such a job title");
                         }
                         const convertedRoleId = res[0].id;
 
@@ -128,6 +128,7 @@ async function init() {
                                 return;
                             }
                             console.log('Employee Added');
+                            runProgram();
                         })
 
                     });
@@ -166,6 +167,7 @@ async function init() {
                 }
                 else {
                     console.log('Changed employees Role');
+                    runProgram();
                 }
             }
         })
@@ -180,6 +182,50 @@ async function init() {
         })
         runProgram();
     }
+    function addRole() {
+        let deptChoices = [];
+        db.query("SELECT * from department", function (err, res) {
+            if (err) {
+                console.error(err);
+            }
+            deptChoices = res;
+            inquirer
+                .prompt([
+                    {
+                        type: 'input',
+                        name: 'newRole',
+                        message: "What is the new role?",
+                    },
+                    {
+                        type: 'input',
+                        name: 'salary',
+                        message: 'What is the salary?'
+                    },
+                    {
+                        type: 'list',
+                        name: 'department',
+                        message: 'What department does this role go under?',
+                        choices: deptChoices.map(function (object) { return object.name })
+                    },])
+                .then(data => {
+                    db.query('SELECT id FROM department WHERE name=?', [data.department], function (err, res) {
+                        if (err) {
+                            console.error(err);
+                            return
+                        }
+                        const convertedDeptId = res[0].id;
+
+                        db.query('INSERT INTO  role (title,salary,department_id) VALUES (?,?,?)', [data.newRole, data.salary, convertedDeptId], function (err, res) {
+                            if (err) {
+                                console.log(err);
+                            }
+                            console.log('Role added');
+                            runProgram();
+                        })
+                    })
+                })
+        })
+    }
     function viewAllDept() {
         db.query('SELECT * FROM department', function (err, res) {
             console.log('---------------------------------------------------------------------------------------');
@@ -193,11 +239,13 @@ async function init() {
 
         runProgram();
     }
-    app.listen(PORT, () => {
+    app.listen(PORT, () => { //starts server listening on port variable
         console.log(`Working on ${PORT}`);
         runProgram();
 
     });
 }
+
+
 
 init();

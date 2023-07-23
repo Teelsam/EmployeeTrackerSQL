@@ -61,7 +61,7 @@ async function init() {
                     viewAllDept();
                 }
                 else if (data.option === 'Add Department') {
-
+                    addDept();
                 }
                 else {
                     return console.log('A choice must be made');
@@ -238,6 +238,25 @@ async function init() {
         })
 
         runProgram();
+    }
+    function addDept() {
+        inquirer
+            .prompt([
+                {
+                    type: 'input',
+                    name: 'newDept',
+                    message: "What is the name of the new department?",
+                }
+            ])
+            .then(data => {
+                db.query('INPUT INTO department (name) VALUES (?)', [data.newDept], function (err, res) {
+                    if (err) {
+                        console.log('add dept error :', err);
+                    }
+                    console.log('Department added');
+                    runProgram();
+                })
+            })
     }
     app.listen(PORT, () => { //starts server listening on port variable
         console.log(`Working on ${PORT}`);

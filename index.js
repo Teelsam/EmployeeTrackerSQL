@@ -249,7 +249,7 @@ async function init() {
                 }
             ])
             .then(data => {
-                db.query('INPUT INTO department (name) VALUES (?)', [data.newDept], function (err, res) {
+                db.query('INSERT INTO department (name) VALUES (?)', [data.newDept], function (err, res) {
                     if (err) {
                         console.log('add dept error :', err);
                     }

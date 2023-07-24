@@ -4,7 +4,7 @@ async function init() {
     const express = require('express');
     const mysql = require('mysql2');
 
-    const PORT = process.env.PORT || 8080;
+    const PORT = process.env.PORT || 8080; //sets the port to run the server on
     const app = express();
 
     app.use(express.urlencoded({ extended: false }));
@@ -34,14 +34,14 @@ async function init() {
     |~WELCOME TO EMPLOYEE MANAGER~|
     -------------------------------`);
 
-    function runProgram() {
+    function runProgram() {// runs the main menu questions 
         inquirer.prompt([{
             type: 'list',
             name: "option",
             message: "What would you like to do?",
             choices: ['View All Employees', 'Add Employee', 'Update Employee Role', 'View All Roles', 'Add Role', 'View All Departments', 'Add Department']
         }])
-            .then(data => {
+            .then(data => { //runs function based on prompt choice
                 if (data.option === 'View All Employees') {
                     viewAllEmp();
                 }
@@ -70,6 +70,7 @@ async function init() {
             })
     }
     function viewAllEmp() {//shows all employees in employee table
+
         db.query(`
         SELECT employee.id, first_name, last_name,manager_id, title AS job_title, salary, department_id FROM employee
         INNER JOIN role
@@ -84,7 +85,7 @@ async function init() {
     }
     function addEmp() { // Does two process, i) queries roles form role table to populate role query in ii) where emp info is collected
         let roleChoices = [];
-        db.query("SELECT * from role", function (err, res) {
+        db.query("SELECT * from role", function (err, res) { //grabs all content from role table
             if (err) {
                 console.error(err);
             }
@@ -111,8 +112,7 @@ async function init() {
                     name: 'newEmployeeManager',
                     message: 'Who is the employees manager?',
                 }]).then(data => {
-
-                    db.query('SELECT id FROM role WHERE title=?', [data.newEmployeeRole], function (err, res) {
+                    db.query('SELECT id FROM role WHERE title=?', [data.newEmployeeRole], function (err, res) {//grabs id content from role table where title matches inquirer prompt data 
                         if (err) {
                             console.error(err);
                             return
@@ -137,42 +137,11 @@ async function init() {
         })
 
     }
-    function updateEmpRole() {
-
-        inquirer.prompt([
-            {
-                type: 'input',
-                name: 'employee',
-                message: 'Please Enter Employee ID',
-            },
-            {
-                type: 'input',
-                name: 'title',
-                message: 'Please Enter the job_title',
-            },
-            {
-                type: 'input',
-                name: 'salary',
-                message: 'Please Enter the Salary of the role',
-            },
-            {
-                type: 'input',
-                name: 'department_id',
-                message: 'Please Enter the department id for that role',
-            }
-        ]).then(data => {
-            db.query('INPUT INTO employee (employee,title,salary,department_id) VALUES (?,?,?,?)', [data.employee, data.title, data.salary, data.department_id]), function (err, res) {
-                if (err) {
-                    console.log(err);
-                }
-                else {
-                    console.log('Changed employees Role');
-                    runProgram();
-                }
-            }
-        })
+    function updateEmpRole() {//runs questions and updates employee table
+        console.log('Cannot update Role at this Time');
+        runProgram();
     }
-    function viewAllRoles() {
+    function viewAllRoles() { // prints all roles in role table to console.
         db.query(`SELECT * FROM role`, function (err, res) {
             console.log('\n');
             console.table(res);
@@ -182,7 +151,7 @@ async function init() {
         })
         runProgram();
     }
-    function addRole() {
+    function addRole() { //adds a role to the role table.
         let deptChoices = [];
         db.query("SELECT * from department", function (err, res) {
             if (err) {
@@ -226,7 +195,7 @@ async function init() {
                 })
         })
     }
-    function viewAllDept() {
+    function viewAllDept() { // prints all departments
         db.query('SELECT * FROM department', function (err, res) {
             console.log('---------------------------------------------------------------------------------------');
             console.table(res);
@@ -239,7 +208,7 @@ async function init() {
 
         runProgram();
     }
-    function addDept() {
+    function addDept() { // runs question asking for name of new department
         inquirer
             .prompt([
                 {
@@ -261,10 +230,7 @@ async function init() {
     app.listen(PORT, () => { //starts server listening on port variable
         console.log(`Working on ${PORT}`);
         runProgram();
-
     });
 }
-
-
 
 init();

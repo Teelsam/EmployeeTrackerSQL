@@ -1,4 +1,5 @@
 # EmployeeTrackerSQL
+[video of app working](https://drive.google.com/file/d/1yOZEVV7JWKrFpsND-6NPXPRUvCp3Zj9h/view)
 
 ## Table of Contents
 -[Description](#description)
